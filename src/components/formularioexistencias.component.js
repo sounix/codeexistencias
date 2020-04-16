@@ -2,6 +2,9 @@
 import React from 'react';
 import { Fragment } from 'react';
 import { useState } from 'react';
+import { Container, Form, Input, Button, Alert } from 'reactstrap';
+
+import { ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Badge } from 'reactstrap';
 
 const TablaExistencias = (props) => {
 
@@ -9,11 +12,17 @@ const TablaExistencias = (props) => {
         if(value && value.length) {
             return (
                 value.map((item, index) => (
-                    <tr key={index}>
-                        <td>{index}</td>
-                        <td>{item.Articulo}</td>
-                        <td>{item.Nombre}</td>
-                    </tr>
+                    <ListGroupItem key={index}>
+                        <ListGroupItemHeading>
+                            <Badge color="primary" pill>SKU: {item.Articulo}</Badge> <Badge color="info" pill>CB: {item.CodigoBarras}</Badge>
+                        </ListGroupItemHeading> 
+                        <ListGroupItemText>
+                            <h4>{item.Nombre}</h4>
+                            <div><strong>{item.DescSubfamila}</strong></div>
+                            <div>Relacion: <span>{item.Relacion}</span></div>
+                            <div className="mt-3"><Button className="ml-auto" color="info">Consultar</Button></div>
+                        </ListGroupItemText>                       
+                    </ListGroupItem>
                 ))
             )
         }
@@ -25,21 +34,12 @@ const TablaExistencias = (props) => {
         if(value.count !== 0 && value.success) {
             const items = renderItems(value.data);
             return (
-                <table className="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Articulo</th>
-                        <th>nombre</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {items}
-                    </tbody>
-                </table>
+                <ListGroup>
+                    {items}
+                </ListGroup>
             );
         } else {
-            return <div>No hay datos que mostrar</div>
+            return <Alert color="danger">No hay datos que mostrar</Alert>
         }
     }
 
@@ -53,7 +53,7 @@ const TablaExistencias = (props) => {
 }
 
 const FormularioExistencias = () => {
-    let [valueQuery, setValueQuery] = useState('');
+    let [valueQuery, setValueQuery] = useState('*nivea*');
     let [data, setData] = useState([]);
 
     const guardarValorQuery = e => {
@@ -69,11 +69,15 @@ const FormularioExistencias = () => {
 
     return (
         <Fragment>
-            <form className="form-inline" onSubmit={enviarQuery}>
-                <input className="form-control mr-sm-2" type="search" placeholder="Ej. *aceit*patro*1lt*" aria-label="Search" value={valueQuery} onChange={guardarValorQuery} />
-                <button className="btn btn-outline-light my-2 my-sm-0" type="submit">Buscar</button>
-            </form>
-            <TablaExistencias value={data} />
+            <Container className="w-75 mt-4">
+                <Form onSubmit={enviarQuery}>
+                    <Input className="mt-2 w-100" type="search" placeholder="Ej. *aceit*patro*1lt*" value={valueQuery} onChange={guardarValorQuery}/>
+                    <Button className="mt-1 mb-4 w-100" color="primary">Buscar</Button>
+                </Form>
+            </Container>
+            <Container className="px-3">
+                <TablaExistencias value={data} />
+            </Container>
         </Fragment>
     );
  }
